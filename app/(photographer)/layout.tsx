@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PhotographerNav } from "@/components/photography/nav";
 import { PhotographerFooter } from "@/components/photography/footer";
+import { Analytics } from "@vercel/analytics/next"
 
 export const metadata: Metadata = {
   title: {
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
 export default function PhotographerLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900 transition-colors duration-300 dark:bg-neutral-950 dark:text-neutral-100">
+      <Analytics />
       <PhotographerNav />
       <main className="flex-1">
         <div
