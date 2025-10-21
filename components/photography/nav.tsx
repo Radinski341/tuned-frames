@@ -10,10 +10,10 @@ import { cn } from "@/lib/utils";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/about", label: "About Me" },
+  { href: "/about", label: "About me" },
   { href: "/portfolio", label: "Work" },
-  { href: "/gear", label: "Gears" },
-  { href: "/contact", label: "Get In Touch" },
+  { href: "/gear", label: "Gear" },
+  { href: "/contact", label: "Get in touch" },
 ];
 
 export function PhotographerNav() {

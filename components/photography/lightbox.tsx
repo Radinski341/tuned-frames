@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { PointerEvent as ReactPointerEvent } from "react";
+import type { PointerEvent as ReactPointerEvent, TouchEvent as ReactTouchEvent } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut } from "lucide-react";
 import { GalleryImage } from "@/lib/photography/gallery";
@@ -43,6 +43,7 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
     setScale(1);
   }, [clampIndex]);
 
+  // Manage focus trapping
   useEffect(() => {
     focusables.current = containerRef.current
       ? Array.from(containerRef.current.querySelectorAll<HTMLElement>("button")).filter(
@@ -57,6 +58,7 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
     };
   }, [index, scale]);
 
+  // Keyboard navigation
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
@@ -93,6 +95,7 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [goNext, goPrev, onClose]);
 
+  // Pointer drag (desktop)
   const onPointerDown = useCallback((event: ReactPointerEvent<HTMLDivElement>) => {
     pointerStart.current = { x: event.clientX, y: event.clientY };
   }, []);
@@ -102,11 +105,28 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
       if (!pointerStart.current) return;
       const deltaX = event.clientX - pointerStart.current.x;
       if (Math.abs(deltaX) > 80) {
-        if (deltaX > 0) {
-          goPrev();
-        } else {
-          goNext();
-        }
+        if (deltaX > 0) goPrev();
+        else goNext();
+      }
+      pointerStart.current = null;
+    },
+    [goNext, goPrev]
+  );
+
+  // Touch gesture support for mobile
+  const onTouchStart = useCallback((event: ReactTouchEvent<HTMLDivElement>) => {
+    const touch = event.touches[0];
+    pointerStart.current = { x: touch.clientX, y: touch.clientY };
+  }, []);
+
+  const onTouchEnd = useCallback(
+    (event: ReactTouchEvent<HTMLDivElement>) => {
+      if (!pointerStart.current) return;
+      const touch = event.changedTouches[0];
+      const deltaX = touch.clientX - pointerStart.current.x;
+      if (Math.abs(deltaX) > 60) {
+        if (deltaX > 0) goPrev();
+        else goNext();
       }
       pointerStart.current = null;
     },
@@ -127,6 +147,8 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
         className="relative flex w-full max-w-5xl flex-col gap-6"
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
       >
         <div className="flex flex-wrap items-center justify-between gap-4 text-white">
           <div>
@@ -142,9 +164,7 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
               className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
               onClick={() =>
                 setScale((value) => {
-                  if (value > 1) {
-                    return 1;
-                  }
+                  if (value > 1) return 1;
                   return Math.min(3, value + 0.5);
                 })
               }
@@ -165,6 +185,7 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
             </button>
           </div>
         </div>
+
         <div className="relative">
           <motion.div
             key={current.src}
@@ -181,16 +202,14 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
               className="max-h-full w-auto max-w-full object-contain"
               style={{
                 transform: `scale(${scale})`,
-                maxHeight: "100%",
-                maxWidth: "100%",
-                width: "auto",
-                height: "auto",
               }}
               sizes="(max-width: 768px) 100vw, 90vw"
               placeholder="blur"
               blurDataURL={current.placeholder}
             />
           </motion.div>
+
+          {/* Navigation Buttons - desktop only */}
           <button
             type="button"
             aria-label="Previous image"
@@ -208,9 +227,11 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
             <ChevronRight aria-hidden className="h-5 w-5" />
           </button>
         </div>
+
         <p className="text-center text-xs text-slate-300 sm:hidden">
-          Swipe to explore the gallery
+          Swipe left or right to explore the gallery
         </p>
+
         {current.exif && (
           <div className="grid grid-cols-2 gap-4 rounded-2xl bg-white/10 p-4 text-xs text-white sm:grid-cols-3 md:grid-cols-6">
             {Object.entries(current.exif).map(([key, value]) => (

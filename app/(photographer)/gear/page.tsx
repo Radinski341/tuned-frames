@@ -33,6 +33,11 @@ const CORE_GEAR = [
   { label: "Action", value: "Go Pro Hero 12" },
 ];
 
+const OTHER_GEAR = [
+  { label: "Tamron", value:"70-300mm F/4.5 - 6.3 Di III RXD"},
+  { label: "Sonny", value:"50mm - SEL 50F18F"}
+]
+
 const TOOLKIT = [
   {
     title: "Car Photography",
@@ -81,6 +86,15 @@ export default function GearPage() {
           <h2 className="text-lg font-semibold text-slate-900 transition-colors dark:text-neutral-100">Core kit</h2>
           <dl className="mt-6 space-y-4 text-sm text-slate-500 transition-colors dark:text-neutral-400">
             {CORE_GEAR.map((gear) => (
+              <div key={gear.label} className="flex items-center justify-between">
+                <dt>{gear.label}</dt>
+                <dd className="font-medium text-slate-900 transition-colors dark:text-neutral-100">{gear.value}</dd>
+              </div>
+            ))}
+          </dl>
+          <h2 className="text-lg font-semibold text-slate-900 transition-colors dark:text-neutral-100 mt-5">Other</h2>
+          <dl className="mt-3 space-y-4 text-sm text-slate-500 transition-colors dark:text-neutral-400">
+            {OTHER_GEAR.map((gear) => (
               <div key={gear.label} className="flex items-center justify-between">
                 <dt>{gear.label}</dt>
                 <dd className="font-medium text-slate-900 transition-colors dark:text-neutral-100">{gear.value}</dd>
