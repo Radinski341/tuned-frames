@@ -34,7 +34,7 @@ async function sendEmail(data: ReturnType<typeof ContactRequestSchema.parse>) {
    port: 587,
    secure: false,
    auth: {
-     user: "lynkai.contact@gmail.com",
+     user: "pecinski5@gmail.com",
      pass: process.env.GMAIL_PASS,
    },
  });
@@ -51,10 +51,11 @@ async function sendEmail(data: ReturnType<typeof ContactRequestSchema.parse>) {
   ].filter(Boolean);
 
   const mailOptions = {
-      from: "lynkai.contact@gmail.com",
+      from: "pecinski5@gmail.com",
       to: [
         "tunedframes@gmail.com",
-        "radinskikire@gmail.com"
+        "radinskikire@gmail.com",
+        "pecinski5@gmail.com"
       ],
       subject: `New photography inquiry — ${data.projectType}`,
       text: bodyLines.join("\n"),
